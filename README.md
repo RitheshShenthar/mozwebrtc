@@ -3,7 +3,7 @@ Customizations for the Mozilla QA WebRTC Cluster
 * bin-overlay/*: files overlaid onto Firefox binary distribution
 * tests-overlay/*: files overload onto Firefox tests distribution
 
-The above go on the server, in ~. Make sure to chmod 755 bin/firefox-tee.sh
+The above go on the server, in ~. Make sure to chmod 755 bin/firefox/firefox-tee.sh
 
 * steeplechase.sh: execution script for standard steeplechase
 * steeplechase-long.sh: execution script for endurance steeplechase
