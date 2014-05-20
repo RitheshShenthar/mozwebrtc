@@ -4,6 +4,7 @@
   <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css"/>
   <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
   <script type="application/javascript" src="head.js"></script>
+  <script type="application/javascript" src="long.js"></script>
   <script type="application/javascript" src="mediaStreamPlayback.js"></script>
   <script type="application/javascript" src="pc.js"></script>
   <script type="application/javascript" src="templates.js"></script>
@@ -11,65 +12,6 @@
 <body>
 <pre id="test">
 <script type="application/javascript">
-  function outputPcStats(pc, label) {
-    pc.getStats(null, function (stats) {
-      var outputStr = '\n\n';
-      function appendOutput(line) {
-        outputStr += line.toString() + '\n';
-      }
-
-      var firstRtp = true;
-      for (prop in stats) {
-        if (typeof stats[prop] === 'object' &&
-            stats[prop].isRemote === false) {
-          var rtp = stats[prop];
-          if (firstRtp) {
-            appendOutput(label.toUpperCase() + ' STATS ' +
-                         '(' + new Date(rtp.timestamp).toISOString() + '):');
-            firstRtp = false;
-          }
-          appendOutput('  ' + rtp.id + ':');
-          if (rtp.type === 'inboundrtp') {
-            appendOutput('    bytesReceived: ' + rtp.bytesReceived);
-            appendOutput('    jitter: ' + rtp.jitter);
-            appendOutput('    packetsLost: ' + rtp.packetsLost);
-            appendOutput('    packetsReceived: ' + rtp.packetsReceived);
-          } else {
-            appendOutput('    bytesSent: ' + rtp.bytesSent);
-            appendOutput('    packetsSent: ' + rtp.packetsSent);
-          }
-        }
-      }
-      outputStr += '\n\n';
-      dump(outputStr);
-    });
-  }
-
-  function generatePollingCommand(duration, interval) {
-    duration = duration || 10000;
-    interval = interval || 250;
-
-    return [
-      'POLL_CONNECTION',
-      function (test) {
-        var startTime = Date.now();
-        var intervalId = setInterval(function () {
-          var timeElapsed = Date.now() - startTime;
-          if (test.pcLocal) {
-            outputPcStats(test.pcLocal, 'LOCAL');
-          }
-          if (test.pcRemote) {
-            outputPcStats(test.pcRemote, 'REMOTE');
-          }
-          if (timeElapsed >= duration) {
-            clearInterval(intervalId);
-            test.next();
-          }
-        }, interval);
-      }
-    ]
-  }
-
   createHTML({
     bug: "XXXXXX",
     title: "Basic audio/video (combined) peer connection, long running"
@@ -80,8 +22,8 @@
   var test;
   runTest(function (options) {
     options = options || {};
-    options.commands = commandsPeerConnection;
-    options.commands.push(generatePollingCommand(1000 * 3600 * 23, 1000));
+    options.commands = commandsPeerConnection.slice(0);
+    options.commands.push(generateIntervalCommand(verifyConnectionStatus));
 
     test = new PeerConnectionTest(options);
     test.setMediaConstraints([{audio: true, video: true}],
