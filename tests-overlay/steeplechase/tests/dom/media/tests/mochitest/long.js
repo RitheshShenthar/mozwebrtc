@@ -4,18 +4,16 @@
 
 
 /**
- * Returns true if the property name refers to a local rtp of the stats object
+ * Returns true if res is a local rtp
  *
- * @param {Object} stats
- *        Stats object to check
- * @param {string} prop
- *        Property name to check
+ * @param {Object} statObject
+ *        One of the objects comprising the report received from getStats()
  * @returns {boolean}
- *        True if prop refers to a local rtp of stats
+ *        True if object is a local rtp
  */
-function isLocalRtp(stats, prop) {
-  return (typeof stats[prop] === 'object' &&
-          stats[prop].isRemote === false);
+function isLocalRtp(statObject) {
+  return (typeof statObject === 'object' &&
+          statObject.isRemote === false);
 }
 
 
@@ -36,7 +34,7 @@ function outputPcStats(stats, label) {
 
   var firstRtp = true;
   for (prop in stats) {
-    if (isLocalRtp(stats, prop)) {
+    if (isLocalRtp(stats[prop])) {
       var rtp = stats[prop];
       if (firstRtp) {
         appendOutput(label.toUpperCase() + ' STATS ' +
@@ -60,15 +58,16 @@ function outputPcStats(stats, label) {
 }
 
 
-var _long_lastStats = {};
+var _lastStats = {};
 /**
  * Verifies the peer connection stats interval over interval
  *
  * @param {Object} stats
  *        Stats object to use for verification
  * @param {string} label
- *        Should be unique. Differentiates stats for interval-over-interval
- *        verification in cases where more than one set is being verified
+ *        Identifies the peer connection. Differentiates stats for
+ *        interval-over-interval verification in cases where more than one set
+ *        is being verified
  */
 function verifyPcStats(stats, label) {
   const INCREASING_INBOUND_STAT_NAMES = [
@@ -81,29 +80,31 @@ function verifyPcStats(stats, label) {
     'packetsSent'
   ];
 
-  if (_long_lastStats[label] === undefined) {
-    _long_lastStats[label] = stats;
+  if (_lastStats[label] === undefined) {
+    _lastStats[label] = stats;
   } else {
-    function verifyIncrease(statNames) {
+    function verifyIncrease(rtpName, statNames) {
+      var timestamp = new Date(stats[rtpName].timestamp).toISOString();
+
       statNames.forEach(function (statName) {
-        ok(stats[prop][statName] > _long_lastStats[label][prop][statName],
-           label + '.' + prop + '.' + statName,
-           label + '.' + prop + '.' + statName + ' increased (value=' +
-           stats[prop][statName] + ')');
+        ok(stats[rtpName][statName] > _lastStats[label][rtpName][statName],
+           timestamp + '.' + label + '.' + rtpName + '.' + statName,
+           label + '.' + rtpName + '.' + statName + ' increased (value=' +
+           stats[rtpName][statName] + ')');
       });
     }
 
     for (prop in stats) {
-      if (isLocalRtp(stats, prop)) {
+      if (isLocalRtp(stats[prop])) {
         if (stats[prop].type === 'inboundrtp') {
-          verifyIncrease(INCREASING_INBOUND_STAT_NAMES);
+          verifyIncrease(prop, INCREASING_INBOUND_STAT_NAMES);
         } else {
-          verifyIncrease(INCREASING_OUTBOUND_STAT_NAMES);
+          verifyIncrease(prop, INCREASING_OUTBOUND_STAT_NAMES);
         }
       }
     }
 
-    _long_lastStats[label] = stats;
+    _lastStats[label] = stats;
   }
 }
 
@@ -111,8 +112,8 @@ function verifyPcStats(stats, label) {
 /**
  * Retrieves and performs a series of operations on PeerConnection stats
  *
- * @param {PeerConnection} pc
- *        PeerConnection from which to get stats
+ * @param {PeerConnectionWrapper} pc
+ *        PeerConnectionWrapper from which to get stats
  * @param {string} label
  *        Label for the peer connection, passed to each stats callback
  * @param {Array} operations
@@ -135,14 +136,14 @@ function processPcStats(pc, label, operations) {
  *        Test containing the peer connection(s) for verification
  */
 function verifyConnectionStatus(test) {
-  operations = [outputPcStats, verifyPcStats];
+  const OPERATIONS = [outputPcStats, verifyPcStats];
 
   if (test.pcLocal) {
-    processPcStats(test.pcLocal, 'LOCAL', operations);
+    processPcStats(test.pcLocal, 'LOCAL', OPERATIONS);
   }
 
   if (test.pcRemote) {
-    processPcStats(test.pcRemote, 'REMOTE', operations);
+    processPcStats(test.pcRemote, 'REMOTE', OPERATIONS);
   }
 }
 
