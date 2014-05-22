@@ -186,3 +186,4 @@ function generateIntervalCommand(callback, interval, duration, name) {
     }
   ]
 }
+
