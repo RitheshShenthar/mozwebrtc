@@ -19,3 +19,9 @@ The crontab should be installed on the server as the user.
 * init.d/server: init.d scripts for the servers
 
 These should be put in /etc/init.d for the clients and server respectively. chmod 755 all init.d scripts as root.
+
+After putting the scripts in the proper place, run:
+
+sudo update-rc.d [script name] defaults
+
+...for each script.
