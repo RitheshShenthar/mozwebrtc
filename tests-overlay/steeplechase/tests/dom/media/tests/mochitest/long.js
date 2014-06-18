@@ -59,6 +59,10 @@ function outputPcStats(stats, label) {
 
 
 var _lastStats = {};
+
+const MAX_ERROR_CYCLES = 5;
+var _errorCount = {};
+
 /**
  * Verifies the peer connection stats interval over interval
  *
@@ -80,14 +84,22 @@ function verifyPcStats(stats, label) {
     'packetsSent'
   ];
 
+  var errorsInCycle = false;
+
   if (_lastStats[label] === undefined) {
     _lastStats[label] = stats;
+    _errorCount[label] = 0;
   } else {
     function verifyIncrease(rtpName, statNames) {
       var timestamp = new Date(stats[rtpName].timestamp).toISOString();
 
       statNames.forEach(function (statName) {
-        ok(stats[rtpName][statName] > _lastStats[label][rtpName][statName],
+        var passed = stats[rtpName][statName] >
+            _lastStats[label][rtpName][statName];
+        if (passed) {
+          errorsInCycle = true;
+        }
+        ok(passed,
            timestamp + '.' + label + '.' + rtpName + '.' + statName,
            label + '.' + rtpName + '.' + statName + ' increased (value=' +
            stats[rtpName][statName] + ')');
@@ -105,6 +117,13 @@ function verifyPcStats(stats, label) {
     }
 
     _lastStats[label] = stats;
+
+    if (errorsInCycle) {
+      _errorCount[label] += 1;
+    } else {
+      // looks like we recovered from a temp glitch
+      _errorCount[label] = 0;
+    }
   }
 }
 
@@ -177,8 +196,16 @@ function generateIntervalCommand(callback, interval, duration, name) {
           callback(test);
         }
 
+        var failed = false;
+        Object.keys(_errorCount).forEach(function (label) {
+          if (_errorCount[label] > MAX_ERROR_CYCLES) {
+            ok(false, "Encountered more then " + MAX_ERROR_CYCLES + " cycles" +
+              "with errors on " + label);
+            failed = true;
+          }
+        });
         var timeElapsed = Date.now() - startTime;
-        if (timeElapsed >= duration) {
+        if ((timeElapsed >= duration) || failed) {
           clearInterval(intervalId);
           test.next();
         }
