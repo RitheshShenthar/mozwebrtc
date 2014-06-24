@@ -2,4 +2,21 @@
 
 ROOT=`dirname $0`
 
-$ROOT/firefox "$@" 2>/tmp/fx-stderr.log | tee /tmp/fx-stdout.log
+[ ! -e $HOME/logs ] && mkdir $HOME/logs
+
+cat > /tmp/fx.rotate.conf <<EOF
+# logrotate configuration for webrtc clients
+
+compress
+rotate 5
+missingok
+
+# Must cd into log directory before calling logrotate
+"fx-stdout.log"
+"fx-stderr.log"
+{ }
+EOF
+
+`cd ~/logs && logrotate -f -s /tmp/fx.rotate.state /tmp/fx.rotate.conf`
+
+$ROOT/firefox "$@" 2>$HOME/logs/fx-stderr.log | tee $HOME/logs/fx-stdout.log

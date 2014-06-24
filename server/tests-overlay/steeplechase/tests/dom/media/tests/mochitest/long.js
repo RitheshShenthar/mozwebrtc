@@ -33,7 +33,7 @@ function outputPcStats(stats, label) {
   }
 
   var firstRtp = true;
-  for (prop in stats) {
+  for (var prop in stats) {
     if (isLocalRtp(stats[prop])) {
       var rtp = stats[prop];
       if (firstRtp) {
@@ -80,9 +80,7 @@ function verifyPcStats(stats, label) {
     'packetsSent'
   ];
 
-  if (_lastStats[label] === undefined) {
-    _lastStats[label] = stats;
-  } else {
+  if (_lastStats[label] !== undefined) {
     function verifyIncrease(rtpName, statNames) {
       var timestamp = new Date(stats[rtpName].timestamp).toISOString();
 
@@ -94,7 +92,7 @@ function verifyPcStats(stats, label) {
       });
     }
 
-    for (prop in stats) {
+    for (var prop in stats) {
       if (isLocalRtp(stats[prop])) {
         if (stats[prop].type === 'inboundrtp') {
           verifyIncrease(prop, INCREASING_INBOUND_STAT_NAMES);
@@ -103,9 +101,9 @@ function verifyPcStats(stats, label) {
         }
       }
     }
-
-    _lastStats[label] = stats;
   }
+  
+  _lastStats[label] = stats;
 }
 
 

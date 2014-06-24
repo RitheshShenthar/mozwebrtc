@@ -1,3 +1,6 @@
+# crontab definition for nightly webrtc tests
+# apply with crontab <this file>
+# 
 # Edit this file to introduce tasks to be run by cron.
 # 
 # Each task to run has to be defined through a single line
@@ -21,6 +24,8 @@
 # 
 # m h  dom mon dow   command
 
-PATH=/home/mozilla/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
-0 2 * * * $HOME/update-nightly.bash > $HOME/update-nightly.log 2>&1
-30 2 * * * $HOME/steeplechase-long.sh > $HOME/steeplechase-long.log 2>&1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+CRONLOG=$HOME/logs/cron.log
+
+00 2 * * * $HOME/etc/cron.daily/update-nightly >> $CRONLOG 2>&1
+30 2 * * * $HOME/etc/cron.daily/steeplechase-long >> $CRONLOG 2>&1
