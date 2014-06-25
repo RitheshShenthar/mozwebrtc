@@ -1,27 +1,40 @@
-Customizations for the Mozilla QA WebRTC Cluster
+# Customizations for the Mozilla QA WebRTC Cluster
 
-* bin-overlay/*: files overlaid onto Firefox binary distribution
-* tests-overlay/*: files overload onto Firefox tests distribution
+## Clients
 
-The above overlay trees go on the server, in ~, with all pathing preserved. Make sure to chmod 755 bin-overlay/firefox/firefox-tee.sh
+* client/init.d/*: init scripts for the clients
 
-* steeplechase.sh: execution script for standard steeplechase
-* steeplechase-long.sh: execution script for endurance steeplechase
-* update-nightly.bash: execution script to update firefox bin and tests
+These should be put in /etc/init.d on each client. chmod 755 all init.d scripts as root. Afterwards, run 'sudo update-rc.d [script name] defaults' for each script.
 
-The above go on the server, in ~. chmod 755 all. They expect ~/bin and ~/tests to be pre-created (and populated, in the case of the steeplechase scripts), and the two overlay trees above to be present.
+## Server
 
-* crontab: crontab to execute update and steeplechase
+* server/aut-overlay
+* server/bin
+* server/etc
+* server/tests-overlay
 
-The crontab should be installed on the server as the user.
+These trees should be copied to the home directory
 
-* init.d/client: init.d scripts for the clients
-* init.d/server: init.d scripts for the servers
+* server/etc/crontab.cron: crontab to execute update and steeplechase
 
-These should be put in /etc/init.d for the clients and server respectively. chmod 755 all init.d scripts as root.
+This should be staged with 'crontab server/etc/crontab.cron'
 
-After putting the scripts in the proper place, run:
+* server/init.d/*: init scripts for the clients
 
-sudo update-rc.d [script name] defaults
+These should be put in /etc/init.d on the server. chmod 755 all init.d scripts as root. Afterwards, run 'sudo update-rc.d [script name] defaults' for each script.
 
-...for each script.
+* server/bin/steeplechase
+* server/bin/steeplechase-long
+* server/tests-overlay/steeplechase/tests/dom/media/tests/mochitest/turnConfig.js: local turn servers
+
+These should be modified with correct host information for clients, signaling server, and TURN server.
+
+## Usage
+
+With the given crontab, jobs will execute at 2AM (update) and 2:30AM (test run). Logs will be created in a directory called ~/logs on both server and client, and rotated automatically.
+
+The bin directory contains several scripts:
+
+steeplechase: runs the standard steeplechase run against ~/aut and ~/tests (no client logging, no long-running tests)
+steeplechase-long: runs the long-running steeplechase tests against ~/aut and ~/tests, with logging
+update-nightly: downloads the latest firefox and test bundle, stages into ~/aut and ~/tests, and applies the overlays.
