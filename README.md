@@ -35,6 +35,6 @@ With the given crontab, jobs will execute at 2AM (update) and 2:30AM (test run).
 
 The bin directory contains several scripts:
 
-steeplechase: runs the standard steeplechase run against ~/aut and ~/tests (no client logging, no long-running tests)
-steeplechase-long: runs the long-running steeplechase tests against ~/aut and ~/tests, with logging
-update-nightly: downloads the latest firefox and test bundle, stages into ~/aut and ~/tests, and applies the overlays.
+* steeplechase: runs the standard steeplechase run against ~/aut and ~/tests (no client logging, no long-running tests)
+* steeplechase-long: runs the long-running steeplechase tests against ~/aut and ~/tests, with logging
+* update-nightly: downloads the latest firefox and test bundle, stages into ~/aut and ~/tests, and applies the overlays.
