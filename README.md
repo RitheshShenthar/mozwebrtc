@@ -1,19 +1,19 @@
-# Customizations for the Mozilla QA WebRTC Cluster
+## Customizations for the Mozilla QA WebRTC Cluster
 
-## Clients
+### Clients
 
 * client/init.d/*: init scripts for the clients
 
 These should be put in /etc/init.d on each client. chmod 755 all init.d scripts as root. Afterwards, run 'sudo update-rc.d [script name] defaults' for each script.
 
-## Server
+### Server
 
-* server/aut-overlay
-* server/bin
-* server/etc
-* server/tests-overlay
+* server/aut-overlay: customizations for the firefox binary directory
+* server/bin: utility scripts
+* server/etc: cron and logging settings
+* server/tests-overlay: customizations for the firefox test tree
 
-These trees should be copied to the home directory
+These trees should be copied with pathing intact to the home directory
 
 * server/etc/crontab.cron: crontab to execute update and steeplechase
 
@@ -29,7 +29,7 @@ These should be put in /etc/init.d on the server. chmod 755 all init.d scripts a
 
 These should be modified with correct host information for clients, signaling server, and TURN server.
 
-## Usage
+### Usage
 
 With the given crontab, jobs will execute at 2AM (update) and 2:30AM (test run). Logs will be created in a directory called ~/logs on both server and client, and rotated automatically.
 
