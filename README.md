@@ -1,4 +1,4 @@
-## Customizations for the Mozilla QA WebRTC Cluster
+## Customizations for the MozQA WebRTC lab
 
 ### Clients
 
