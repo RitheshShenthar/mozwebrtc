@@ -25,7 +25,7 @@ These should be put in /etc/init.d on the server. chmod 755 all init.d scripts a
 
 * server/bin/steeplechase
 * server/bin/steeplechase-long
-* server/tests-overlay/steeplechase/tests/dom/media/tests/mochitest/turnConfig.js: local turn servers
+* server/tests-overlay/steeplechase/tests/dom/media/tests/mochitest/turnConfig.js
 
 These should be modified with correct host information for clients, signaling server, and TURN server.
 
