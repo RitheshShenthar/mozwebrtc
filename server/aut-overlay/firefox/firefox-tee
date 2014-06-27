@@ -19,4 +19,10 @@ EOF
 
 `cd ~/logs && logrotate -f -s /tmp/fx.rotate.state /tmp/fx.rotate.conf`
 
+export NSPR_LOG_MODULES=webrtc_trace:65535,datachannel:9,sctp:9,signaling:9,mtransport:9,timestamp
+export NSPR_LOG_FILE=$HOME/logs/nspr.log
+export WEBRTC_TRACE_FILE=$HOME/logs/webrtc.log
+export R_LOG_DESTINATION=stderr
+export R_LOG_LEVEL=9
+export R_LOG_VERBOSE=1
 $ROOT/firefox "$@" 2>$HOME/logs/fx-stderr.log | tee $HOME/logs/fx-stdout.log
