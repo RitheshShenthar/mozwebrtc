@@ -2,5 +2,5 @@
 
 [ ! -e ~/logs ] && mkdir ~/logs
 
-`cd ~/logs && logrotate -f -s ~/etc/logrotate.state ~/etc/steeplechase-long.rotate.conf` 
+`cd ~/logs && /usr/sbin/logrotate -f -s ~/etc/logrotate.state ~/etc/steeplechase-long.rotate.conf`
 ~/bin/steeplechase-long > ~/logs/steeplechase-long.log 2>&1

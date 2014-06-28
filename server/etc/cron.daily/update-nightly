@@ -2,5 +2,5 @@
 
 [ ! -e ~/logs ] && mkdir ~/logs
 
-`cd ~/logs && logrotate -f -s ~/etc/logrotate.state ~/etc/update-nightly.rotate.conf`
+`cd ~/logs && /usr/sbin/logrotate -f -s ~/etc/logrotate.state ~/etc/update-nightly.rotate.conf`
 ~/bin/update-nightly > ~/logs/update-nightly.log 2>&1
