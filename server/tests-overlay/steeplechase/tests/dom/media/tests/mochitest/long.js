@@ -93,7 +93,7 @@ function verifyPcStats(stats, label) {
       statNames.forEach(function (statName) {
         var passed = stats[rtpName][statName] >
             _lastStats[label][rtpName][statName];
-        if (passed) {
+        if (!passed) {
           errorsInCycle = true;
         }
         ok(passed,
@@ -115,8 +115,12 @@ function verifyPcStats(stats, label) {
 
     if (errorsInCycle) {
       _errorCount[label] += 1;
+      info(label +": increased error counter to " + _errorCount[label]);
     } else {
       // looks like we recovered from a temp glitch
+      if (_errorCount[label] > 0) {
+        info(label + ": reseting error counter to zero");
+      }
       _errorCount[label] = 0;
     }
   } else {
@@ -199,7 +203,7 @@ function generateIntervalCommand(callback, interval, duration, name) {
         Object.keys(_errorCount).forEach(function (label) {
           if (_errorCount[label] > MAX_ERROR_CYCLES) {
             ok(false, "Encountered more then " + MAX_ERROR_CYCLES + " cycles" +
-              "with errors on " + label);
+              " with errors on " + label);
             failed = true;
           }
         });
