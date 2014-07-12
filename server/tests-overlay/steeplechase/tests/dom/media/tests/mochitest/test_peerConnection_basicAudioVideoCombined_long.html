@@ -23,8 +23,6 @@
     title: "Basic audio/video (combined) peer connection, long running"
   });
 
-  FAKE_ENABLED = false;
-
   var test;
   runTest(function (options) {
     options = options || {};
@@ -32,8 +30,8 @@
     options.commands.push(generateIntervalCommand(verifyConnectionStatus));
 
     test = new PeerConnectionTest(options);
-    test.setMediaConstraints([{audio: true, video: true}],
-                             [{audio: true, video: true}]);
+    test.setMediaConstraints([{audio: true, video: true, fake: false}],
+                             [{audio: true, video: true, fake: false}]);
     test.run();
   });
 </script>

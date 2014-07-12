@@ -23,8 +23,6 @@
     title: "Basic video-only peer connection"
   });
 
-  FAKE_ENABLED = false;
-
   var test;
   runNetworkTest(function (options) {
     options = options || {};
@@ -32,7 +30,8 @@
     options.commands.push(generateIntervalCommand(verifyConnectionStatus));
 
     test = new PeerConnectionTest(options);
-    test.setMediaConstraints([{video: true}], [{video: true}]);
+    test.setMediaConstraints([{video: true, fake: false}],
+                             [{video: true, fake: false}]);
     test.run();
   });
 </script>

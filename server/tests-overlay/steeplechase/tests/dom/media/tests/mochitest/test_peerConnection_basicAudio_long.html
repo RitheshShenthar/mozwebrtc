@@ -23,8 +23,6 @@
     title: "Basic audio-only peer connection"
   });
 
-  FAKE_ENABLED = false;
-
   var test;
   runNetworkTest(function (options) {
     options = options || {};
@@ -32,7 +30,8 @@
     options.commands.push(generateIntervalCommand(verifyConnectionStatus));
 
     test = new PeerConnectionTest(options);
-    test.setMediaConstraints([{audio: true}], [{audio: true}]);
+    test.setMediaConstraints([{audio: true, fake: false}],
+                             [{audio: true, fake: false}]);
     test.run();
   });
 </script>
