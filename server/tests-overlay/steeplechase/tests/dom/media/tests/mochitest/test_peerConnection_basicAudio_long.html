@@ -27,7 +27,9 @@
   runNetworkTest(function (options) {
     options = options || {};
     options.commands = commandsPeerConnection.slice(0);
-    options.commands.push(generateIntervalCommand(verifyConnectionStatus));
+    options.commands.push(generateIntervalCommand(verifyConnectionStatus,
+                                                  1000 * 10,
+                                                  1000 * 3600 * 3));
 
     test = new PeerConnectionTest(options);
     test.setMediaConstraints([{audio: true, fake: false}],
